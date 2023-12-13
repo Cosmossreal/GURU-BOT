@@ -105,8 +105,6 @@ export async function handler(chatUpdate) {
                     user.role = 'Tadpole'
                 if (!('autolevelup' in user))
                     user.autolevelup = false
-                if (!('chatbot' in user))
-                    user.chatbot = false
             } else {
                 global.db.data.users[m.sender] = {
                     exp: 0,
@@ -125,14 +123,14 @@ export async function handler(chatUpdate) {
                     level: 0,
                     role: 'Tadpole',
                     autolevelup: false,
-                    chatbot: false,
+                    
                 }
                 }
             let chat = global.db.data.chats[m.chat]
             if (typeof chat !== "object")
                 global.db.data.chats[m.chat] = {}
             if (chat) {
-                if (!("antiDelete" in chat)) chat.antiDelete = false
+                if (!("antiDelete" in chat)) chat.antiDelete = true
                 if (!("antiLink" in chat)) chat.antiLink = false
                 if (!("antiSticker" in chat)) chat.antiSticker = false
                 if (!("antiToxic" in chat)) chat.antiToxic = false
@@ -147,11 +145,13 @@ export async function handler(chatUpdate) {
                 if (!("sWelcome" in chat)) chat.sWelcome = ""
                 if (!("useDocument" in chat)) chat.useDocument = false
                 if (!("viewOnce" in chat)) chat.viewOnce = false
+                if (!("viewStory" in chat)) chat.viewStory = false
                 if (!("welcome" in chat)) chat.welcome = false
+                if (!("chatbot" in chat)) chat.chatbot = false
                 if (!isNumber(chat.expired)) chat.expired = 0
             } else
                 global.db.data.chats[m.chat] = {
-                    antiDelete: false,
+                    antiDelete: true,
                     antiLink: false,
                     antiSticker: false,
                     antiToxic: false,
@@ -168,7 +168,9 @@ export async function handler(chatUpdate) {
                     sWelcome: "",
                     useDocument: false,
                     viewOnce: false,
+                    viewStory: false,
                     welcome: false,
+                    chatbot: false
                 }
           
                 
@@ -192,8 +194,6 @@ export async function handler(chatUpdate) {
             console.error(e)
         }
         if (opts["nyimak"])
-            return
-        if (!m.fromMe && opts["self"])
             return
         if (opts["pconly"] && m.chat.endsWith("g.us"))
             return
@@ -219,7 +219,10 @@ export async function handler(chatUpdate) {
                 await delay(time)
             }, time)
         }
+         if (process.env.MODE && process.env.MODE.toLowerCase() === 'private' && !(isROwner || isOwner))
+          return;
 
+        
         if (m.isBaileys)
             return
         m.exp += Math.ceil(Math.random() * 10)
@@ -501,8 +504,10 @@ export async function handler(chatUpdate) {
         } catch (e) {
             console.log(m, m.quoted, e)
         }
-        if (opts["autoread"])
-            await this.chatRead(m.key).catch(() => {})
+        if (process.env.autoRead)
+            await conn.readMessages([m.key])
+        if (process.env.statusview && m.key.remoteJid === 'status@broadcast') 
+            await conn.readMessages([m.key])
     }
 }
 
