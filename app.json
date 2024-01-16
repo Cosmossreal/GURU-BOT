@@ -10,12 +10,12 @@
     "DATABASE_URL": {
       "description": "your mongodb database url",
       "required": false,
-      "value": ""
+      "value": "mongodb_540095e1-6500-4c60-aff8-f50e93f90066"
     },
     "SESSION_ID": {
       "description": "your session id",
       "required": true,
-      "value": ""
+      "value": "Guru_b9689c46-8f38-4b84-a1fa-6f13a2ac57f2"
     },
     "MODE": {
       "description": "mode public or private",
